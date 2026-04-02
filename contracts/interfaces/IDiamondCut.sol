@@ -23,10 +23,10 @@ interface IDiamondCut {
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
     function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
+        FacetCut[] calldata _diamondCut,//takes in the diamond cut
+        address _init,//initializes the diamond cut
+        bytes calldata _calldata//call data for it.abi
     ) external;
 
-    event DiamondCut(FacetCut[] _diamondCut, address _init, bytes _calldata);
+    event DiamondCut(FacetCut[] _diamondCut, address _init, bytes _calldata);//event to show that it was a success.
 }

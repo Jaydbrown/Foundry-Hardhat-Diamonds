@@ -5,28 +5,33 @@ import "forge-std/Script.sol";
 import {IDiamondCut} from "../contracts/interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "../contracts/interfaces/IDiamondLoupe.sol";
 import {DiamondUpgradeHelper} from "../test/helpers/DiamondUpgradeHelper.sol";
+import {ERC721MintFacet} from "../contracts/facets/ERC721MintFacet.sol";
 
-contract DiamondUpgradeExample is Script, DiamondUpgradeHelper {
+contract UpgradeERC721Mint is Script, DiamondUpgradeHelper {
     function run() external {
-        // Define all inputs explicitly here:
-        address diamond = address(0x000000000000000000000000000000000000dEaD); // TODO set
+        address diamond = vm.envAddress("DIAMOND_ADDRESS");
 
-        // Configure adds
-        address[] memory addFacetAddresses = new address[](0);
-        string[] memory addFacetNames = new string[](0);
+        vm.startBroadcast();
+        ERC721MintFacet mintFacet = new ERC721MintFacet();
+        vm.stopBroadcast();
 
-        // Configure replacements
+        // Action.Add — triggers LibDiamond.addFunctions internally
+        // only selectors that do NOT exist on the diamond yet
+        address[] memory addFacetAddresses = new address[](1);
+        addFacetAddresses[0] = address(mintFacet);
+
+        string[] memory addFacetNames = new string[](1);
+        addFacetNames[0] = "ERC721MintFacet";
+
+        // Nothing to replace or remove
         address[] memory replaceFacetAddresses = new address[](0);
-        string[] memory replaceFacetNames = new string[](0);
+        string[] memory replaceFacetNames     = new string[](0);
+        bytes4[] memory removeSelectors        = new bytes4[](0);
 
-        // Configure removals
-        bytes4[] memory removeSelectors = new bytes4[](0);
-
-        // Optional init
-        address init = address(0);
+        // No init — storage already initialized from first deployment
+        address init             = address(0);
         bytes memory initCalldata = hex"";
 
-        // Build cuts
         IDiamondCut.FacetCut[] memory addCuts = buildAddCutsByNames(
             addFacetAddresses,
             addFacetNames
@@ -46,11 +51,8 @@ contract DiamondUpgradeExample is Script, DiamondUpgradeHelper {
         if (removeSelectors.length > 0)
             cuts[k++] = buildRemoveCut(removeSelectors);
 
-        // Execute
         vm.startBroadcast();
         executeDiamondCut(IDiamondCut(diamond), cuts, init, initCalldata);
         vm.stopBroadcast();
     }
 }
-
-

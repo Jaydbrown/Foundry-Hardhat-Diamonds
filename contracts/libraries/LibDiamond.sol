@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+//important for the ERC721 upgradeability.
 pragma solidity ^0.8.0;
 
 /******************************************************************************\
@@ -56,7 +57,7 @@ library LibDiamond {
     {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
-            ds.slot := position
+            ds.slot := position//underground work to describe the storage position for the facet.
         }
     }
 
