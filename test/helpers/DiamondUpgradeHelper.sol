@@ -127,7 +127,6 @@ abstract contract DiamondUpgradeHelper is DiamondUtils {
         if (hasAdd) cuts[k++] = add;
     }
 
-    // Build a Remove cut for a list of selectors.
     function buildRemoveCut(
         bytes4[] memory selectors
     ) internal pure returns (IDiamondCut.FacetCut memory cut) {
